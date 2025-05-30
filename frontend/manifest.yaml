@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: myapp
+    team: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: frontend
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: boodiebo/my-frontend
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: myapp
+    team: frontend
+spec:
+  selector:
+    app: myapp
+    type: frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+  type: NodePort

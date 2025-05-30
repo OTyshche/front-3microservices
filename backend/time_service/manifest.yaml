@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: time-service-deployment
+  labels:
+    app: myapp
+    team: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: time-service
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: time-service
+    spec:
+      containers:
+      - name: time-service
+        image: boodiebo/my-js
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: time-service-service
+  labels:
+    app: myapp
+    team: backend
+spec:
+  selector:
+    app: myapp
+    type: time-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001
+  type: ClusterIP

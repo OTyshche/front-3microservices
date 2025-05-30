@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+  labels:
+    app: myapp
+    team: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: user-service
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: boodiebo/my-python
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-service
+  labels:
+    app: myapp
+    team: backend
+spec:
+  selector:
+    app: myapp
+    type: user-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5001
+  type: ClusterIP

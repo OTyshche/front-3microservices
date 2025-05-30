@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-service-deployment
+  labels:
+    app: myapp
+    team: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: random-service
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: random-service
+    spec:
+      containers:
+      - name: random-service
+        image: boodiebo/my-go
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: random-service-service
+  labels:
+    app: myapp
+    team: backend
+spec:
+  selector:
+    app: myapp
+    type: random-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8081
+  type: ClusterIP

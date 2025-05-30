@@ -95,9 +95,9 @@
     <script>
         // Configuration for service endpoints
         // IMPORTANT: These URLs will likely need to be updated based on how you deploy your services (e.g., Docker container IPs/ports, Kubernetes service names)
-        const USER_SERVICE_URL = 'http://localhost:5001/api/user'; // Default for local Python Flask
-        const TIME_SERVICE_URL = 'http://localhost:3001/api/time'; // Default for local Node.js Express
-        const RANDOM_NUMBER_SERVICE_URL = 'http://localhost:8081/api/random'; // Default for local Go
+        const USER_SERVICE_URL = 'http://user-service-service/api/user'; // Default for local Python Flask
+        const TIME_SERVICE_URL = 'http://time-service-service/api/time'; // Default for local Node.js Express
+        const RANDOM_NUMBER_SERVICE_URL = 'http://random-service-service/api/random'; // Default for local Go
 
         // DOM Elements
         const btnUser = document.getElementById('btnUser');
