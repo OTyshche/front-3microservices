@@ -50,11 +50,11 @@ pipeline {
         
         stage('Run services') {
             steps {
-                sh 'docker run -d --name front -p 80:80 $FRONTEND_IMAGE'
-                sh 'docker run -d --name go -p 8081:8081 $GO_IMAGE'
-                sh 'docker run -d --name js -p 3001:3001 $JS_IMAGE'
-                sh 'docker run -d --name python -p 5001:5001 $PYTHON_IMAGE'
-                sh 'docker run -d --name gateway -p 8080:8080 $GATEWAY_IMAGE'
+                sh 'docker run -d --name front -p 80:80 $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE'
+                sh 'docker run -d --name go -p 8081:8081 $DOCKER_CREDENTIALS_ID/$GO_IMAGE'
+                sh 'docker run -d --name js -p 3001:3001 $DOCKER_CREDENTIALS_ID/$JS_IMAGE'
+                sh 'docker run -d --name python -p 5001:5001 $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE'
+                sh 'docker run -d --name gateway -p 8080:8080 $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE'
             }
         }
         
@@ -99,11 +99,11 @@ pipeline {
         stage('Cleanup images') {
             steps {
                 echo 'Cleaning up images...'
-                sh 'docker image rm -f $FRONTEND_IMAGE || true'
-                sh 'docker image rm -f $GO_IMAGE || true'
-                sh 'docker image rm -f $JS_IMAGE || true'
-                sh 'docker image rm -f $PYTHON_IMAGE || true'
-                sh 'docker image rm -f $GATEWAY_IMAGE || true'
+                sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE || true'
+                sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$GO_IMAGE || true'
+                sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$JS_IMAGE || true'
+                sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE || true'
+                sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE || true'
             }
         }
 
@@ -142,11 +142,11 @@ pipeline {
             sh 'docker rm -f js || true'
             sh 'docker rm -f python || true'
             sh 'docker rm -f gateway || true'
-            sh 'docker image rm -f $FRONTEND_IMAGE || true'
-            sh 'docker image rm -f $GO_IMAGE || true'
-            sh 'docker image rm -f $JS_IMAGE || true'
-            sh 'docker image rm -f $PYTHON_IMAGE || true'
-            sh 'docker image rm -f $GATEWAY_IMAGE || true'
+            sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE || true'
+            sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$GO_IMAGE || true'
+            sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$JS_IMAGE || true'
+            sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE || true'
+            sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE || true'
             echo 'Containers and images cleaned up.'
         }
     }
