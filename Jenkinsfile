@@ -87,11 +87,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Pushing images to Docker Hub...'
-                sh docker push "$DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE"
-                sh docker push "$DOCKER_CREDENTIALS_ID/$GO_IMAGE"
-                sh docker push "$DOCKER_CREDENTIALS_ID/$JS_IMAGE"
-                sh docker push "$DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE"
-                sh docker push "$DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE"
+                sh "docker push $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE"
+                sh "docker push $DOCKER_CREDENTIALS_ID/$GO_IMAGE"
+                sh "docker push $DOCKER_CREDENTIALS_ID/$JS_IMAGE"
+                sh "docker push $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE"
+                sh "docker push $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE"
                 echo 'Images pushed successfully.'
             }
         }
