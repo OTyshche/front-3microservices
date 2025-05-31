@@ -6,6 +6,8 @@ pipeline {
         GO_IMAGE = 'my-go:latest'
         JS_IMAGE = 'my-js:latest'
         FRONTEND_IMAGE = 'my-frontend:latest'
+        GATEWAY_IMAGE = 'my-gateway:latest'
+        DOCKER_CREDENTIALS_ID = 'boodiebo'
     }
     
     stages {
@@ -19,27 +21,30 @@ pipeline {
         stage('Images build') {
             steps {
                 dir('backend/random_service') {
-                    sh 'docker build -t $GO_IMAGE .'
+                    sh 'docker build -t $DOCKER_CREDENTIALS_ID/$GO_IMAGE .'
                 }
                 dir('backend/time_service') {
-                    sh 'docker build -t $JS_IMAGE .'
+                    sh 'docker build -t $DOCKER_CREDENTIALS_ID/$JS_IMAGE .'
                 }
                 dir('backend/user_service') {
-                    sh 'docker build -t $PYTHON_IMAGE .'
+                    sh 'docker build -t $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE .'
+                }
+                dir('backend/gateway'){
+                    sh 'docker build -t $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE .'
                 }
                 dir('frontend') {
-                    sh 'docker build -t $FRONTEND_IMAGE .'
+                    sh 'docker build -t $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE .'
                 }
             }
         }
         
         stage('Cleanup of old containers') {
             steps {
-                sh 'docker stop front || true'
-                sh 'docker stop go || true'
-                sh 'docker stop js || true'
-                sh 'docker stop python || true'
-                sh 'docker container prune -f || true'
+                sh 'docker rm -f front || true'
+                sh 'docker rm -f go || true'
+                sh 'docker rm -f js || true'
+                sh 'docker rm -f python || true'
+                sh 'docker rm -f gateway || true'
             }
         }
         
@@ -49,6 +54,7 @@ pipeline {
                 sh 'docker run -d --name go -p 8081:8081 $GO_IMAGE'
                 sh 'docker run -d --name js -p 3001:3001 $JS_IMAGE'
                 sh 'docker run -d --name python -p 5001:5001 $PYTHON_IMAGE'
+                sh 'docker run -d --name gateway -p 8080:8080 $GATEWAY_IMAGE'
             }
         }
         
@@ -66,23 +72,82 @@ pipeline {
                 }
             }
         }
+
+        stage('Cleanup') {
+            steps {
+                echo 'Tests were successful. Cleaning up containers...'
+                sh 'docker rm -f front || true'
+                sh 'docker rm -f go || true'
+                sh 'docker rm -f js || true'
+                sh 'docker rm -f python || true'
+                sh 'docker rm -f gateway || true'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Pushing images to Docker Hub...'
+                docker push "$DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE"
+                docker push "$DOCKER_CREDENTIALS_ID/$GO_IMAGE"
+                docker push "$DOCKER_CREDENTIALS_ID/$JS_IMAGE"
+                docker push "$DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE"
+                docker push "$DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE"
+                echo 'Images pushed successfully.'
+            }
+        }
+        
+        stage('Cleanup images') {
+            steps {
+                echo 'Cleaning up images...'
+                sh 'docker image rm -f $FRONTEND_IMAGE || true'
+                sh 'docker image rm -f $GO_IMAGE || true'
+                sh 'docker image rm -f $JS_IMAGE || true'
+                sh 'docker image rm -f $PYTHON_IMAGE || true'
+                sh 'docker image rm -f $GATEWAY_IMAGE || true'
+            }
+        }
+
+        stage('Deploying kubernetes') {
+            steps {
+                echo 'Deploying to Kubernetes...'
+                dir('frontend'){
+                    h 'kubectl apply -f anifest.yaml'
+                }
+                dir('backend/random_service') {
+                    sh 'kubectl apply -f manifest.yaml'
+                }
+                dir('backend/time_service') {
+                    sh 'kubectl apply -f manifest.yaml'
+                }
+                dir('backend/user_service') {
+                    sh 'kubectl apply -f manifest.yaml'
+                }
+                dir('backend/gateway') {
+                    sh 'kubectl apply -f manifest.yaml'
+                }
+                echo 'Kubernetes deployment completed.'
+            }
+        }
+
     }
     
     post {
         success {
-            echo 'System successfuly deployed'
+            echo 'All stages completed successfully.'
         }
         failure {
             echo 'Tests failed. Cleaning up containers...'
-            sh 'docker stop front || true'
-            sh 'docker stop go || true'
-            sh 'docker stop js || true'
-            sh 'docker stop python || true'
+            sh 'docker rm -f front || true'
+            sh 'docker rm -f go || true'
+            sh 'docker rm -f js || true'
+            sh 'docker rm -f python || true'
+            sh 'docker rm -f gateway || true'
             sh 'docker image rm -f $FRONTEND_IMAGE || true'
             sh 'docker image rm -f $GO_IMAGE || true'
             sh 'docker image rm -f $JS_IMAGE || true'
             sh 'docker image rm -f $PYTHON_IMAGE || true'
-            sh 'docker container prune -f || true'
+            sh 'docker image rm -f $GATEWAY_IMAGE || true'
+            echo 'Containers and images cleaned up.'
         }
     }
 } 
