@@ -119,7 +119,7 @@ pipeline {
             steps {
                 echo 'Deploying to Kubernetes...'
                 dir('frontend'){
-                    h 'kubectl apply -f anifest.yaml'
+                    h 'kubectl apply -f manifest.yaml'
                 }
                 dir('backend/random_service') {
                     sh 'kubectl apply -f manifest.yaml'
