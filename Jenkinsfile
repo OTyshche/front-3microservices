@@ -54,7 +54,7 @@ pipeline {
                 sh 'docker run -d --name go -p 8081:8081 $DOCKER_CREDENTIALS_ID/$GO_IMAGE'
                 sh 'docker run -d --name js -p 3001:3001 $DOCKER_CREDENTIALS_ID/$JS_IMAGE'
                 sh 'docker run -d --name python -p 5001:5001 $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE'
-                sh 'docker run -d --name gateway -p 8080:8080 $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE'
+                sh 'docker run -d --name gateway -p 8082:8082 $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE'
             }
         }
         
