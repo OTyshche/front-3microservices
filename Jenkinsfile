@@ -61,7 +61,7 @@ pipeline {
         stage('Wait for Service') {
             steps {
                 echo 'Waiting 60 seconds for service to start...'
-                sleep time: 60, unit: 'SECONDS'
+                sleep time: 120, unit: 'SECONDS'
             }
         }
         
@@ -84,7 +84,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Pushing images to Docker Hub') {
             steps {
                 echo 'Pushing images to Docker Hub...'
                 sh "docker push $DOCKER_CREDENTIALS_ID/$FRONTEND_IMAGE"
