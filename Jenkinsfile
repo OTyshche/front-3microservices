@@ -61,7 +61,7 @@ pipeline {
         stage('Wait for Service') {
             steps {
                 echo 'Waiting 60 seconds for service to start...'
-                sleep time: 120, unit: 'SECONDS'
+                sleep time: 90, unit: 'SECONDS'
             }
         }
         
@@ -144,7 +144,7 @@ pipeline {
             echo 'All stages completed successfully.'
         }
         failure {
-            echo 'Tests failed. Cleaning up containers...'
+            echo 'Pipeline failed. Cleaning up containers and images...'
             sh 'docker rm -f front || true'
             sh 'docker rm -f go || true'
             sh 'docker rm -f js || true'
@@ -156,6 +156,10 @@ pipeline {
             sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$PYTHON_IMAGE || true'
             sh 'docker image rm -f $DOCKER_CREDENTIALS_ID/$GATEWAY_IMAGE || true'
             echo 'Containers and images cleaned up.'
+            echo 'Cleaning up Kubernetes deployments...'
+            sh 'kubectl delete deployment --all || true'
+            sh 'kubectl delete service --all || true'
+            echo 'Kubernetes deployments cleaned up.'
         }
     }
 } 
